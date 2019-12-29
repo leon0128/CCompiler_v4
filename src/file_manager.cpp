@@ -1,5 +1,6 @@
 #include "file_manager.hpp"
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 bool FileManager::write(const char* filename,
@@ -28,7 +29,10 @@ bool FileManager::read(const char* filename,
     if(!file.is_open())
         return openError(filename);
     
-    file >> data;
+    std::stringstream stream;
+    stream << file.rdbuf();
+    
+    data = stream.str();
     file.close();
 
     return true;
@@ -37,7 +41,8 @@ bool FileManager::read(const char* filename,
 bool FileManager::openError(const char* filename)
 {
     std::cerr << "file_error:\n    "
-              << "failed to open file "
-              << "(" << filename << ")" << std::endl;
+                 "failed to open file "
+                 "(" << filename << ")"
+              << std::endl;
     return false;
 }

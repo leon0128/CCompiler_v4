@@ -11,5 +11,7 @@ public:
 private:
     bool error(const char* message);
 
+    class Preprocessor* mPreprocessor;
+
     bool mIsValid;
 };

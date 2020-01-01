@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+class Token;
 
 namespace DATA
 {
@@ -9,4 +12,6 @@ namespace DATA
     
     std::string& SOURCE();
     std::string& PREPROCESS();
+    
+    std::vector<Token*>& TOKENIZE();
 };

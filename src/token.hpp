@@ -10,8 +10,8 @@ private:
 public:
     static void destroy();
 
-    Token(std::size_t inPos,
-          std::size_t inSize);
+    Token(std::size_t inPos = 0,
+          std::size_t inSize = 0);
     ~Token();
     
     std::size_t pos;

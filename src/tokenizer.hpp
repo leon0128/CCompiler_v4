@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 class Tokenizer
 {
 public:
@@ -17,6 +19,6 @@ private:
     bool isAlphabet(char c) const;
     bool isNumber(char c) const;
 
-    bool mIndex;
+    std::size_t mIndex;
     bool mIsValid;
 };

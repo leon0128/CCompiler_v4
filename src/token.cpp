@@ -15,3 +15,7 @@ Token::Token(std::size_t inPos,
 {
     TOKENS.push_back(this);
 }
+
+Token::~Token()
+{
+}

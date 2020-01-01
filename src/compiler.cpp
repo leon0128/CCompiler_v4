@@ -2,19 +2,23 @@
 #include "data.hpp"
 #include "debugger.hpp"
 #include "preprocessor.hpp"
+#include "tokenizer.hpp"
 #include <iostream>
 
 Compiler::Compiler():
-    mPreprocessor(),
+    mPreprocessor(nullptr),
+    mTokenizer(nullptr),
     mIsValid(true)
 {
     mPreprocessor = new Preprocessor();
+    mTokenizer = new Tokenizer();
 }
 
 Compiler::~Compiler()
 {
     Debugger::debug();
 
+    delete mTokenizer;
     delete mPreprocessor;
 }
 
@@ -25,6 +29,8 @@ bool Compiler::operator()(int argc, char** argv)
 
     if(!(*mPreprocessor)())
         return error("failed to preprocess");
+    if(!(*mTokenizer)())
+        return error("failed to tokenize");
 
     return mIsValid;
 }

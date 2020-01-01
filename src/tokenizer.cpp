@@ -14,15 +14,19 @@ Tokenizer::~Tokenizer()
 
 bool Tokenizer::operator()()
 {
-    for(std::size_t i = 0; i < DATA::PREPROCESS().size(); i++)
+    while(mIndex < DATA::PREPROCESS().size() &&
+          mIsValid)
     {
-        
-
-        std::size_t endPos = i;
-        for(; endPos < DATA::PREPROCESS().size(); endPos)
-        {
-            if()
-        }
+        if(isIdentifier())
+            ;
+        else if(isIntegral())
+            ;
+        else if(isSymbol())
+            ;
+        else if(isIgnore())
+            ;
+        else
+            mIsValid = false;
     }
 
     return mIsValid;
@@ -68,8 +72,37 @@ bool Tokenizer::isIntegral()
 bool Tokenizer::isSymbol()
 {
     char c = DATA::PREPROCESS().at(mIndex);
+    Token* token = nullptr;
 
-    if(c = 10)
+    if(c == '(' ||
+       c == ')' ||
+       c == '{' ||
+       c == '}' ||
+       c == '+' ||
+       c == '-' ||
+       c == '*' ||
+       c == '/' ||
+       c == ';')
+        token = new Token(mIndex++, 1);
+    else
+        return false;
+
+    DATA::TOKENIZE().push_back(token);
+    return true;
+}
+
+bool Tokenizer::isIgnore()
+{
+    char c = DATA::PREPROCESS().at(mIndex);
+
+    if(c == '\n' ||
+       c == '\t' ||
+       c == ' ')
+        mIndex++;
+    else
+        return false;
+
+    return true;
 }
 
 bool Tokenizer::isAlphabet(char c) const

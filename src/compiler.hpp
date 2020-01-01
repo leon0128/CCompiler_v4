@@ -12,6 +12,7 @@ private:
     bool error(const char* message);
 
     class Preprocessor* mPreprocessor;
+    class Tokenizer* mTokenizer;
 
     bool mIsValid;
 };

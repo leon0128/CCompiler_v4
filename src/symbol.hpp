@@ -58,6 +58,18 @@ class AbstractDeclarator;
 class ParameterList;
 class ParameterDeclaration;
 class DirectAbstractDeclarator;
+class EnumeratorList;
+class Enumerator;
+class InitDeclarator;
+class Initializer;
+class InitializerList;
+class Statement;
+class LabeledStatement;
+class ExpressionStatement;
+class CompoundStatement;
+class SelectionStatement;
+class IterationStatement;
+class JumpStatement;
 
 class Symbol
 {
@@ -1083,10 +1095,10 @@ public:
 class AssignmentOperator : public Symbol
 {
 public:
-    AssignmentExpression():
+    AssignmentOperator():
         Symbol(),
         type(NONE){}
-    ~AssignmentExpression(){}
+    ~AssignmentOperator(){}
 
     enum EAssignmentOperator
     {
@@ -1110,10 +1122,10 @@ public:
 class UnaryOperator : public Symbol
 {
 public:
-    UnaryExpression():
+    UnaryOperator():
         Symbol(),
         type(NONE){}
-    ~UnaryExpression(){}
+    ~UnaryOperator(){}
 
     enum EUnaryOperator
     {
@@ -1135,7 +1147,7 @@ public:
     TypeName():
         Symbol(),
         specifierQualifiers(),
-        abstractDeclarator(){}
+        abstractDeclarator(nullptr){}
     ~TypeName(){}
 
     std::vector<SpecifierQualifier*> specifierQualifiers;
@@ -1145,10 +1157,10 @@ public:
 class ParameterTypeList : public Symbol
 {
 public:
-    ParameterList():
+    ParameterTypeList():
         Symbol(),
         parameterLists(){}
-    ~ParameterList(){}
+    ~ParameterTypeList(){}
 
     std::vector<ParameterList*> parameterLists;
 };
@@ -1257,9 +1269,21 @@ public:
 class DirectAbstractDeclarator : public Symbol
 {
 public:
+    DirectAbstractDeclarator():
+        Symbol(),
+        type(NONE),
+        uDirectAbstractDeclarator(){}
+    ~DirectAbstractDeclarator(){}
 
-    enum EDirec
+    enum EDirectAbstractDeclarator
+    {
+        NONE,
+        ABSTRACT_DECLARATOR,
+        DIRECT_ABSTRACT_DECLARATOR_CONSTANT_EXPRESSION,
+        DIRECT_ABSTRACT_DECLARATOR_PARAMETER_TYPE_LIST
+    };
 
+    EDirectAbstractDeclarator type;
     union UDirectAbstractDeclarator
     {
         UDirectAbstractDeclarator(){}
@@ -1277,4 +1301,411 @@ public:
             ParameterTypeList* parameterTypeList;
         } directAbstractDeclaratorParameterTypeList;
     } uDirectAbstractDeclarator;
+};
+
+class EnumSpecifier : public Symbol
+{
+public:
+    EnumSpecifier():
+        Symbol(),
+        type(NONE),
+        uEnumSpecifier(){}
+    ~EnumSpecifier(){}
+
+    enum EEnumSpecifier
+    {
+        NONE,
+        IDENTIFIER_ENUMERATOR_LISTS,
+        ENUMERATOR_LISTS,
+        IDENTIFIER
+    };
+
+    EEnumSpecifier type;
+    union UEnumSpecifier
+    {
+        UEnumSpecifier(){}
+        ~UEnumSpecifier(){}
+
+        struct
+        {
+            Identifier* identifier;
+            std::vector<EnumeratorList*> enumeratorLists;
+        } identifierEnumeratorLists;
+        std::vector<EnumeratorList*> enumeratorLists;
+        Identifier* identifier;
+    } uEnumSpecifier;
+};
+
+class EnumeratorList : public Symbol
+{
+public:
+    EnumeratorList():
+        Symbol(),
+        type(NONE),
+        uEnumeratorList(){}
+    ~EnumeratorList(){}
+
+    enum EEnumeratorList
+    {
+        NONE,
+        ENUMERATOR,
+        ENUMERATOR_LIST_ENUMERATOR
+    };
+
+    EEnumeratorList type;
+    union UEnumeratorList
+    {
+        UEnumeratorList(){}
+        ~UEnumeratorList(){}
+
+        Enumerator* enumerator;
+        struct
+        {
+            EnumeratorList* enumeratorList;
+            Enumerator* enumerator;
+        } enumeratorListEnumerator;
+    } uEnumeratorList;
+};
+
+class Enumerator : public Symbol
+{
+public:
+    Enumerator():
+        Symbol(),
+        type(NONE),
+        uEnumerator(){}
+    ~Enumerator(){}
+
+    enum EEnumerator
+    {
+        NONE,
+        IDENTIFIER,
+        IDENTIFIER_CONSTANT_EXPRESSION
+    };
+
+    EEnumerator type;
+    union UEnumerator
+    {
+        Identifier* identifier;
+        struct
+        {
+            Identifier* identifier;
+            ConstantExpression* constantExpression;
+        } identifierConstantExpression;
+    } uEnumerator;
+};
+
+class TypedefName : public Symbol
+{
+public:
+    TypedefName():
+        Symbol(),
+        identifier(nullptr){}
+    ~TypedefName(){}
+
+    Identifier* identifier;
+};
+
+class Declaration : public Symbol
+{
+public:
+    Declaration():
+        Symbol(),
+        declarationSpecifiers(),
+        initDeclarator(){}
+    ~Declaration(){}
+
+    std::vector<DeclarationSpecifier*> declarationSpecifiers;
+    std::vector<InitDeclarator*> initDeclarator;
+};
+
+class InitDeclarator : public Symbol
+{
+public:
+    InitDeclarator():
+        Symbol(),
+        type(NONE),
+        uInitDeclarator(){}
+    ~InitDeclarator(){}
+
+    enum EInitDeclarator
+    {
+        NONE,
+        DECLARATOR,
+        DECLARATOR_INIT_DECLARATOR
+    };
+
+    EInitDeclarator type;
+    union UInitDeclarator
+    {
+        UInitDeclarator(){}
+        ~UInitDeclarator(){}
+
+        Declarator* declarator;
+        struct
+        {
+            Declarator* declarator;
+            Initializer* initializer;
+        } declaratorInitializer;
+    } uInitDeclarator;
+};
+
+class Initializer : public Symbol
+{
+public:
+    Initializer():
+        Symbol(),
+        type(NONE),
+        uInitializer(){}
+    ~Initializer(){}
+
+    enum EInitializer
+    {
+        NONE,
+        ASSIGNMENT_EXPRESSION,
+        INITIALIZER_LIST,
+        INITIALIZER_LIST_COMMA
+    };
+
+    EInitializer type;
+    union
+    {
+        AssignmentExpression* assignmentExpression;
+        InitializerList* initializerList;
+        InitializerList* initializerListComma;
+    } uInitializer;
+};
+
+class InitializerList : public Symbol
+{
+public:
+    InitializerList():
+        Symbol(),
+        type(NONE),
+        uInitializerList(){}
+    ~InitializerList(){}
+
+    enum EInitializerList
+    {
+        NONE,
+        INITIALIZER,
+        INITIALIZER_LIST_INITIALIZER
+    };
+
+    EInitializerList type;
+    union UInitializerList
+    {
+        UInitializerList(){}
+        ~UInitializerList(){}
+
+        Initializer* initializer;
+        struct
+        {
+            InitializerList* initializerList;
+            Initializer* initializer;
+        } initializerListInitializer;
+    } uInitializerList;
+};
+
+class CompoundStatement : public Symbol
+{
+public:
+    CompoundStatement():
+        Symbol(),
+        declarations(),
+        statements(){}
+    ~CompoundStatement(){}
+
+    std::vector<Declaration*> declarations;
+    std::vector<Statement*> statements;
+};
+
+class Statement : public Symbol
+{
+public:
+    Statement():
+        Symbol(),
+        type(NONE),
+        uStatement(){}
+    ~Statement(){}
+
+    enum EStatement
+    {
+        NONE,
+        LABELED_STATEMENT,
+        EXPRESSION_STATEMENT,
+        COMPOUND_STATEMENT,
+        SELECTION_STATEMENT,
+        ITERATION_STATEMENT,
+        JUMP_STATEMENT
+    };
+
+    EStatement type;
+    union
+    {
+        LabeledStatement* labeledStatement;
+        ExpressionStatement* expressionStatement;
+        CompoundStatement* compoundStatement;
+        SelectionStatement* selectionStatement;
+        IterationStatement* iterationStatement;
+        JumpStatement* jumpStatement;
+    } uStatement;
+};
+
+class LabeledStatement : public Symbol
+{
+public:
+    LabeledStatement():
+        Symbol(),
+        type(NONE),
+        uLabeledStatement(){}
+    ~LabeledStatement(){}
+
+    enum ELabeledStatement
+    {
+        NONE,
+        IDENTIFIER_STATEMENT,
+        CONSTANT_EXPRESSION_STATEMENT,
+        STATEMENT
+    };
+
+    ELabeledStatement type;
+    union ULabeledStatement
+    {
+        ULabeledStatement(){}
+        ~ULabeledStatement(){}
+
+        struct
+        {
+            Identifier* identifier;
+            Statement* statement;
+        } identifierStatement;
+        struct
+        {
+            ConstantExpression* constantExpression;
+            Statement* statement;
+        } constantExpressionStatement;
+        Statement* statement;
+    } uLabeledStatement;
+};
+
+class ExpressionStatement : public Symbol
+{
+public:
+    ExpressionStatement():
+        Symbol(),
+        expression(nullptr){}
+    ~ExpressionStatement(){}
+
+    Expression* expression;
+};
+
+class SelectionStatement : public Symbol
+{
+public:
+    SelectionStatement():
+        Symbol(),
+        type(NONE),
+        uSelectionStatement(){}
+    ~SelectionStatement(){}
+
+    enum ESelectionStatement
+    {
+        NONE,
+        IF_EXPRESSION_STATEMENT,
+        IF_EXPRESSION_STATEMENT_ELSE_STATEMENT,
+        SWITCH_EXPRESSION_STATEMENT
+    };
+
+    ESelectionStatement type;
+    union USelectionStatement
+    {
+        USelectionStatement(){}
+        ~USelectionStatement(){}
+
+        struct
+        {
+            Expression* expression;
+            Statement* statement;
+        } ifExpressionStatement;
+        struct
+        {
+            Expression* expression;
+            Statement* statement;
+            Statement* elseStatement;
+        } ifExpressionStatementElseStatement;
+        struct
+        {
+            Expression* expression;
+            Statement* statement;
+        } switchExpressionStatement;
+    } uSelectionStatement;
+};
+
+class IteratorStatement : public Symbol
+{
+public:
+    IteratorStatement():
+        Symbol(),
+        type(NONE),
+        uIteratorStatement(){}
+    ~IteratorStatement(){}
+
+    enum EIteratorStatement
+    {
+        NONE,
+        EXPRESSION_STATEMENT,
+        STATEMENT_EXPRESSION,
+        EXPRESSION_EXPRESSION_EXPRESSION_STATEMENT
+    };
+
+    EIteratorStatement type;
+    union UIteratorStatement
+    {
+        UIteratorStatement(){}
+        ~UIteratorStatement(){}
+
+        struct
+        {
+            Expression* expression;
+            Statement* statement;
+        } expressionStatement;
+        struct
+        {
+            Statement* statement;
+            Expression* expression;
+        } statementExpression;
+        struct
+        {
+            Expression* initExpression;
+            Expression* cmpExpression;
+            Expression* rateExpression;
+        } expressionExpressionExpressionStatement;
+    } uIteratorStatement;
+};
+
+class JumpStatement : public Symbol
+{
+public:
+    JumpStatement():
+        Symbol(),
+        type(NONE),
+        uJumpStatement(){}
+    ~JumpStatement(){}
+
+    enum EJumpStatement
+    {
+        NONE,
+        GOTO_IDENTIFIER,
+        CONTINUE,
+        BREAK,
+        RETURN_EXPRESSION
+    };
+
+    EJumpStatement type;
+    union
+    {
+        Identifier* identifier;
+        Expression* expression;
+    } uJumpStatement;
 };

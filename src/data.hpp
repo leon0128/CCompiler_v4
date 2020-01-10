@@ -4,6 +4,7 @@
 #include <vector>
 
 class Token;
+class Symbol;
 
 namespace DATA
 {
@@ -13,5 +14,6 @@ namespace DATA
     std::string& SOURCE();
     std::string& PREPROCESS();
     
-    std::vector<Token*>& TOKENIZE();
+    std::vector<Token*>&  TOKENIZE();
+    std::vector<Symbol*>& PARSER();
 };
